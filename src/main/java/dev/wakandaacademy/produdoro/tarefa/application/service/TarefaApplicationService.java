@@ -43,6 +43,8 @@ public class TarefaApplicationService implements TarefaService {
 	@Override
 	public void usuarioModificaOrdemDeUmaTarefa(String emailUsario, UUID idTarefa, int novaPosicao) {
         log.info("[inicia] TarefaApplicationService - usuarioModificaOrdemDeUmaTarefa");
+        Usuario usuarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(emailUsario);
+        log.debug("[usuarioPorEmail] {}", usuarioPorEmail.toString());
         log.info("[finaliza] TarefaApplicationService - usuarioModificaOrdemDeUmaTarefa");
 	}
 }
