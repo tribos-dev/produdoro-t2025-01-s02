@@ -21,7 +21,6 @@ public class TarefaApplicationService implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
         log.info("[inicia] TarefaApplicationService - criaNovaTarefa");
@@ -40,4 +39,10 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
         return tarefa;
     }
+    
+	@Override
+	public void usuarioModificaOrdemDeUmaTarefa(String emailUsario, UUID idTarefa, int novaPosicao) {
+        log.info("[inicia] TarefaApplicationService - usuarioModificaOrdemDeUmaTarefa");
+        log.info("[finaliza] TarefaApplicationService - usuarioModificaOrdemDeUmaTarefa");
+	}
 }
