@@ -28,6 +28,7 @@ public interface TarefaAPI {
     TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization",required = true) String token, 
     		@PathVariable UUID idTarefa);
     
+    @DocumentaModificaOrdemTarefa
     @PatchMapping("/{idTarefa}/modifica-posicao-tarefa")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void usuarioModificaOrdemDeUmaTarefa(@RequestHeader(name = "Authorization",required = true) String token, 
