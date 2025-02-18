@@ -70,7 +70,23 @@ class TarefaApplicationServiceTest {
 		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
 
 		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), idtarefa, novaPosicao));
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusException());
+        
+		assertEquals(HttpStatus.NOT_FOUND, ex.getStatusException());
         assertEquals("Tarefa não encontrada!", ex.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Deve lançar excecao quando email usuario for inválido")
+	void modificaOrdemDeUmaTarefaQuandoEmailForInvalidoDeveLancarExcecao() {
+		Tarefa tarefa = DataHelper.createTarefa();
+		int novaPosicao = 1;
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenThrow(APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontrado!"));
+
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa("testeinvalido@gmail.com", tarefa.getIdTarefa(), novaPosicao));
+		verify(tarefaRepository, never()).buscaTarefaPorId(any());
+		
+		assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusException());
+        assertEquals("Usuario não encontrado!", ex.getMessage());
 	}
 }
