@@ -49,7 +49,7 @@ public class Usuario {
 		verificaStatusFoco();
 	}
 
-	private void verificaStatusFoco() {
+	public void verificaStatusFoco() {
 		if (this.status.equals(StatusUsuario.FOCO)){
 			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuário já está em foco!");
 		}
@@ -61,7 +61,7 @@ public class Usuario {
 	 	this.status = StatusUsuario.FOCO;
 	}
 
-	private void validaUsuarioPorId(UUID idUsuario) {
+	public void validaUsuarioPorId(UUID idUsuario) {
 		if (!this.idUsuario.equals(idUsuario)){
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Id não pertence ao usuário");
 		}
