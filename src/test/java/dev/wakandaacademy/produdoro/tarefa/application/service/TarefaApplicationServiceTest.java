@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,5 +89,23 @@ class TarefaApplicationServiceTest {
 		
 		assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusException());
         assertEquals("Usuario não encontrado!", ex.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Deve lançar excecao quando tarefa não perntence ao usuario")
+	void modificaOrdemDeUmaTarefaQuandoTarefaNaoPertenceAoUsuarioDeveLancarExcecao() {
+		Usuario usuario = DataHelper.createUsuarioInvalido();
+		Tarefa tarefa = DataHelper.createTarefa();
+		int novaPosicao = 1;
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), novaPosicao));
+		verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(any());
+		verify(tarefaRepository, times(1)).buscaTarefaPorId(any());
+
+		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+        assertEquals("Usuário não é dono da Tarefa solicitada!", ex.getMessage());
 	}
 }
