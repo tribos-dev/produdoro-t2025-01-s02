@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,7 +22,6 @@ public class TarefaApplicationService implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
         log.info("[inicia] TarefaApplicationService - criaNovaTarefa");
@@ -29,6 +29,7 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - criaNovaTarefa");
         return TarefaIdResponse.builder().idTarefa(tarefaCriada.getIdTarefa()).build();
     }
+
     @Override
     public Tarefa detalhaTarefa(String usuario, UUID idTarefa) {
         log.info("[inicia] TarefaApplicationService - detalhaTarefa");
@@ -54,4 +55,21 @@ public class TarefaApplicationService implements TarefaService {
         tarefaRepository.salva(tarefa);
         log.info("[finaliza] TarefaApplicationService - ativaTarefa");
     }
+
+    @Override
+    public void deletaTarefasConcluidas(String usuarioEmail, UUID idUsuario) {
+        log.info("[inicia] TarefaApplicationService - deletaTarefasConcluidas");
+        Usuario usarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(usuarioEmail);
+        Usuario usuario = usuarioRepository.buscaUsuarioPorId(idUsuario);
+        usuario.validaUsuarioPorId(usarioPorEmail.getIdUsuario());
+        List<Tarefa> tarefasConcluidas = tarefaRepository.buscaTarefasConcluidas(usuario.getIdUsuario());
+        if (tarefasConcluidas.isEmpty()) {
+            throw APIException.build(HttpStatus.NOT_FOUND,"Usuário não possui nenhuma tarefa concluída!");
+        }
+        tarefaRepository.deletaTarefasConcluidas(tarefasConcluidas);
+        List<Tarefa> tarefasDoUsuario = tarefaRepository.buscaTarefasPorUsuario(usuario.getIdUsuario());
+        tarefaRepository.ajustaPosicaoDasTarefas(tarefasDoUsuario);
+        log.info("[finaliza] TarefaApplicationService - deletaTarefasConcluidas");
+    }
+
 }
