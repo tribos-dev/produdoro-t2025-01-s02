@@ -1,19 +1,19 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.DataHelper;
+import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +25,7 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
+import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 class TarefaApplicationServiceTest {
@@ -38,7 +39,6 @@ class TarefaApplicationServiceTest {
     TarefaRepository tarefaRepository;
     @Mock
     UsuarioRepository usuarioRepository;
-
 
     @Test
     void deveRetornarIdTarefaNovaCriada() {
@@ -73,4 +73,87 @@ class TarefaApplicationServiceTest {
         TarefaRequest request = new TarefaRequest("tarefa 1", UUID.randomUUID(), null, null, 0);
         return request;
     }
+
+    @Test
+    @DisplayName("Deleta tarefas concluídas")
+    void deveDeletarTarefasConcluidas() {
+        Usuario usuario = DataHelper.createUsuario();
+        List<Tarefa> tarefasConcluidas = DataHelper.createTarefasConcluidas();
+        List<Tarefa> tarefas = DataHelper.createListTarefa();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorId(any())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefasConcluidas(any())).thenReturn(tarefasConcluidas);
+        when(tarefaRepository.buscaTarefasPorUsuario(any())).thenReturn(tarefas);
+
+        tarefaApplicationService.deletaTarefasConcluidas(usuario.getEmail(), usuario.getIdUsuario());
+
+        verify(tarefaRepository, times(1)).deletaTarefasConcluidas(tarefasConcluidas);
+        verify(tarefaRepository, times(1)).ajustaPosicaoDasTarefas(tarefas);
+    }
+
+    @Test
+    @DisplayName("Não deleta tarefas concluídas, quando email inexistente")
+    void naoDeveDeletarTarefasConcluidas_quandoEmailInexistente() {
+        String usuarioEmail = "email_inexistente@email.com";
+        when(usuarioRepository.buscaUsuarioPorEmail(any()))
+                .thenThrow(APIException.build(HttpStatus.BAD_REQUEST, "Usuário não encontrado!"));
+
+        assertThrows(APIException.class,
+                () -> tarefaApplicationService.deletaTarefasConcluidas(usuarioEmail, UUID.randomUUID()));
+
+        verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(usuarioEmail);
+    }
+
+    @Test
+    @DisplayName("Não deleta tarefas concluídas quando idUsuario inexistente")
+    void naoDeveDeletarTarefasConcluidas_quandoIdUsuarioInexistente() {
+        Usuario usuario = DataHelper.createUsuario();
+        String usuarioEmail = usuario.getEmail();
+        UUID idUsuarioInvalido = UUID.randomUUID();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorId(any()))
+                .thenThrow(APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontrado!"));
+
+        assertThrows(APIException.class, () -> tarefaApplicationService.deletaTarefasConcluidas(usuarioEmail, idUsuarioInvalido));
+
+        verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(usuarioEmail);
+        verify(usuarioRepository, times(1)).buscaUsuarioPorId(idUsuarioInvalido);
+    }
+
+    @Test
+    @DisplayName("Não deleta tarefas concluídas quando usuarioEmail não pertence ao usuário")
+    void naoDeveDeletarTarefasConcluidas_quandoUsuarioEmailNaoPertenceAoUsuario() {
+        Usuario usuario = DataHelper.createUsuario();
+        UUID idUsuario = usuario.getIdUsuario();
+        Usuario usuarioTeste = DataHelper.createUsuarioTeste();
+        String usuarioTesteEmail = usuarioTeste.getEmail();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuarioTeste);
+        when(usuarioRepository.buscaUsuarioPorId(any())).thenReturn(usuario);
+
+        APIException ex = assertThrows(APIException.class,
+                () -> tarefaApplicationService.deletaTarefasConcluidas(usuarioTesteEmail, idUsuario));
+
+        assertEquals("Id não pertence ao usuário!", ex.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+    }
+
+    @Test
+    @DisplayName("Não deleta tarefas concluídas quando usuário não possui tarefas concluídas")
+    void naoDevedeletarTarefasConcluidas_quandoUsuarioNaoPossuiTarefasConcluidas() {
+        Usuario usuario = DataHelper.createUsuario();
+        String usuarioEmail = usuario.getEmail();
+        UUID idUsuario = usuario.getIdUsuario();
+        List<Tarefa> tarefasConcluidas = List.of();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorId(any())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefasConcluidas(any())).thenReturn(tarefasConcluidas);
+
+        APIException ex = assertThrows(APIException.class,
+                () -> tarefaApplicationService.deletaTarefasConcluidas(usuarioEmail, idUsuario));
+
+        assertEquals("Usuário não possui nenhuma tarefa concluída!", ex.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusException());
+    }
+
 }
