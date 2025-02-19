@@ -44,6 +44,15 @@ public class TarefaApplicationService implements TarefaService {
     }
 
     @Override
+    public void concluiTarefa(String usuarioEmail, UUID idTarefa) {
+        log.info("[inicia] TarefaApplicationService --> concluiTarefa");
+        Tarefa tarefa = detalhaTarefa(usuarioEmail, idTarefa);
+        tarefa.concluiTarefa();
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService --> concluiTarefa");
+    }
+
+    @Override
     public void ativaTarefa(String email, UUID idTarefa) {
         log.info("[inicia] TarefaApplicationService - ativaTarefa");
         Tarefa tarefa = tarefaRepository.buscaTarefaPorId(idTarefa)

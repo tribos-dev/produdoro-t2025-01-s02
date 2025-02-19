@@ -14,9 +14,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.DataHelper;
-import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +46,7 @@ class TarefaApplicationServiceTest {
     TarefaRepository tarefaRepository;
     @Mock
     UsuarioRepository usuarioRepository;
-   
+
 
     @Test
     void deveRetornarIdTarefaNovaCriada() {
@@ -59,7 +61,15 @@ class TarefaApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("Ativa tarefa - deve ativar tarefa")
+    void deveConcluirTarefa() {
+        Usuario usuario = DataHelper.createUsuario1();
+        Tarefa tarefa = DataHelper.createTarefa();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+        tarefaApplicationService.concluiTarefa(usuario.getEmail(), tarefa.getIdTarefa());
+        assertEquals(tarefa.getStatus(), StatusTarefa.CONCLUIDA);
+    }
+
     void ativaTarefaDeveAtivarTarefa(){
         UUID idTarefa = DataHelper.createTarefa().getIdTarefa();
         UUID idUsuario = DataHelper.createUsuario().getIdUsuario();
@@ -72,7 +82,6 @@ class TarefaApplicationServiceTest {
         verify(tarefaRepository, times(1)).buscaTarefaPorId(idTarefa);
         verify(tarefaRepository, times(1)).desativaTarefaAtiva(idUsuario);
         assertEquals(StatusAtivacaoTarefa.ATIVA, tarefa.getStatusAtivacao());
-
     }
 
     public TarefaRequest getTarefaRequest() {

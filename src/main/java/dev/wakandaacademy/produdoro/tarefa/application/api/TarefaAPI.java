@@ -26,7 +26,13 @@ public interface TarefaAPI {
     List<TarefaUsuarioListReponse> listaTodasTarefasUsuario(
             @RequestHeader(name = "Authorization", required = true) String token, @PathVariable UUID idUsuario);
 
-    @PatchMapping("ativa-tarefa/{idTarefa}")
+
+    @PatchMapping("/conclui-tarefa/{idTarefa}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    void concluiTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                       @PathVariable UUID idTarefa);
+
+    @PatchMapping("/ativa-tarefa/{idTarefa}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void ativaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
                      @PathVariable UUID idTarefa);
