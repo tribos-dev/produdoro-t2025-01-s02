@@ -47,17 +47,33 @@ public class TarefaInfraRepository implements TarefaRepository {
 	public void modificaOrdemTarefa(int posicaoAtual, List<Tarefa> tarefasUsuario, int novaPosicao) {
 		log.info("[inicia] TarefaInfraRepository - modificaOrdemTarefa");
 		int menorPosicao = (novaPosicao < 0 ) ? 0 : Math.min(posicaoAtual, novaPosicao);
-		int maiorPosicao = (novaPosicao >= (tarefasUsuario.size()) ) ? tarefasUsuario.size() - 1 : Math.max(posicaoAtual, novaPosicao);
 		int posicaoInicial = (posicaoAtual < novaPosicao ) ? menorPosicao + 1 : menorPosicao;
-		IntStream.range(posicaoInicial, maiorPosicao)
-		.mapToObj(i -> {
-			return retornaTarefa(tarefasUsuario.get(i), i);
-		}).collect(Collectors.toList());
+		int maiorFinal = (novaPosicao >= (tarefasUsuario.size()) ) ? tarefasUsuario.size() - 1 : Math.max(posicaoAtual, novaPosicao);
+		List<Tarefa> tarefasReodernadas = (posicaoAtual < novaPosicao ) ? ordenaTarefasCrescente(tarefasUsuario, posicaoInicial, maiorFinal) : ordenaTarefasDecrescente(tarefasUsuario, posicaoInicial, maiorFinal);
+		tarefaSpringMongoDBRepository.saveAll(tarefasReodernadas);
 		log.info("[finaliza] TarefaInfraRepository - modificaOrdemTarefa");
 	}
 
-	private Tarefa retornaTarefa(Tarefa tarefa, int posicao) {
+	private List<Tarefa> ordenaTarefasCrescente(List<Tarefa> tarefasUsuario, int posicaoInicial, int maiorFinal) {
+		log.info("[inicia] TarefaInfraRepository - ordenaTarefasCrescente");
+		return IntStream.range(posicaoInicial, maiorFinal)
+		.mapToObj(i -> {
+			return retornaTarefaAtualizada(tarefasUsuario.get(i), i +1);
+		}).collect(Collectors.toList());
+	}
+	
+	private List<Tarefa> ordenaTarefasDecrescente(List<Tarefa> tarefasUsuario, int posicaoInicial, int maiorFinal) {
+		log.info("[inicia] TarefaInfraRepository - ordenaTarefasDecrescente");
+		return IntStream.range(posicaoInicial, maiorFinal)
+		.mapToObj(i -> {
+			return retornaTarefaAtualizada(tarefasUsuario.get(i), i -1);
+		}).collect(Collectors.toList());
+	}
+
+	private Tarefa retornaTarefaAtualizada(Tarefa tarefa, int posicao) {
 		log.info("[inicia] TarefaInfraRepository - retornaTarefa");
-		return null;
+		tarefa.alteraPosicao(posicao);
+		log.info("[finaliza] TarefaInfraRepository - retornaTarefa");
+		return tarefa;
 	}
 }
