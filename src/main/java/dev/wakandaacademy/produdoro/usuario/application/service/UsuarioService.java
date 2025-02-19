@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface UsuarioService {
 	UsuarioCriadoResponse criaNovoUsuario(UsuarioNovoRequest usuarioNovo);
     UsuarioCriadoResponse buscaUsuarioPorId(UUID idUsuario);
-
+    void mudaStatusParaFoco(String usuario, UUID idUsuario);
 }
