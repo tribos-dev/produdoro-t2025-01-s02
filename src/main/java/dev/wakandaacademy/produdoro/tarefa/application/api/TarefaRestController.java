@@ -1,9 +1,10 @@
 package dev.wakandaacademy.produdoro.tarefa.application.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import dev.wakandaacademy.produdoro.config.security.service.TokenService;
 import dev.wakandaacademy.produdoro.handler.APIException;
@@ -35,6 +36,24 @@ public class TarefaRestController implements TarefaAPI {
 		return new TarefaDetalhadoResponse(tarefa);
 	}
 
+	@Override
+	public void concluiTarefa(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController --> concluiTarefa");
+		String usuarioEmail = getUsuarioByToken(token);
+		tarefaService.concluiTarefa(usuarioEmail, idTarefa);
+		log.info("[finaliza] TarefaRestController --> concluiTarefa");
+
+	}
+
+
+	public void ativaTarefa(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - ativaTarefa");
+		String email = getUsuarioByToken(token);
+		tarefaService.ativaTarefa(email,idTarefa);
+		log.info("[finaliza] TarefaRestController - ativaTarefa");
+
+	}
+
 	private String getUsuarioByToken(String token) {
 		log.debug("[token] {}", token);
 		String usuario = tokenService.getUsuarioByBearerToken(token).orElseThrow(() -> APIException.build(HttpStatus.UNAUTHORIZED, token));
@@ -48,6 +67,15 @@ public class TarefaRestController implements TarefaAPI {
 		String emailUsario = getUsuarioByToken(token);
 		tarefaService.usuarioModificaOrdemDeUmaTarefa(emailUsario, idTarefa, novaPosicao);
 		log.info("[finaliza] TarefaRestController - usuarioModificaOrdemDeUmaTarefa");
+
+	}		
+	
+	public List<TarefaUsuarioListReponse> listaTodasTarefasUsuario(String token, UUID idUsuario) {
+		log.info("[inicia] TarefaRestController - listaTodasTarefasUsuario");
+		String email = getUsuarioByToken(token);
+		List<TarefaUsuarioListReponse> tarefasUsuario = tarefaService.listaTodasTarefasUsuario(email, idUsuario);
+		log.info("[finaliza] TarefaRestController - listaTodasTarefasUsuario");
+		return tarefasUsuario;
 	}
 
 }
