@@ -48,32 +48,25 @@ public class TarefaInfraRepository implements TarefaRepository {
 		log.info("[inicia] TarefaInfraRepository - modificaOrdemTarefa");
 		int menorPosicao = (novaPosicao < 0 ) ? 0 : Math.min(posicaoAtual, novaPosicao);
 		int posicaoInicial = (posicaoAtual < novaPosicao ) ? menorPosicao + 1 : menorPosicao;
-		int maiorFinal = (novaPosicao >= (tarefasUsuario.size()) ) ? tarefasUsuario.size() - 1 : Math.max(posicaoAtual, novaPosicao);
-		List<Tarefa> tarefasReodernadas = (posicaoAtual < novaPosicao ) ? ordenaTarefasCrescente(tarefasUsuario, posicaoInicial, maiorFinal) : ordenaTarefasDecrescente(tarefasUsuario, posicaoInicial, maiorFinal);
+		int posicaoFinal = (novaPosicao >= (tarefasUsuario.size()) ) ? tarefasUsuario.size() - 1 : Math.max(posicaoAtual, novaPosicao);
+	    int direcao = (posicaoAtual < novaPosicao) ? 1 : -1;
+		List<Tarefa> tarefasReodernadas = ordenaTarefas(tarefasUsuario, posicaoInicial, posicaoFinal, direcao);
 		tarefaSpringMongoDBRepository.saveAll(tarefasReodernadas);
 		log.info("[finaliza] TarefaInfraRepository - modificaOrdemTarefa");
 	}
 
-	private List<Tarefa> ordenaTarefasCrescente(List<Tarefa> tarefasUsuario, int posicaoInicial, int maiorFinal) {
-		log.info("[inicia] TarefaInfraRepository - ordenaTarefasCrescente");
-		return IntStream.range(posicaoInicial, maiorFinal)
-		.mapToObj(i -> {
-			return retornaTarefaAtualizada(tarefasUsuario.get(i), i +1);
-		}).collect(Collectors.toList());
-	}
-	
-	private List<Tarefa> ordenaTarefasDecrescente(List<Tarefa> tarefasUsuario, int posicaoInicial, int maiorFinal) {
-		log.info("[inicia] TarefaInfraRepository - ordenaTarefasDecrescente");
-		return IntStream.range(posicaoInicial, maiorFinal)
-		.mapToObj(i -> {
-			return retornaTarefaAtualizada(tarefasUsuario.get(i), i -1);
+	private List<Tarefa> ordenaTarefas(List<Tarefa> tarefasUsuario, int posicaoInicial, int posicaoFinal, int direcao) {
+		log.info("[inicia] TarefaInfraRepository - ordenaTarefas");
+		return IntStream.range(posicaoInicial, posicaoFinal)
+		.mapToObj(posicao -> {
+			return atualizaTarefa(tarefasUsuario.get(posicao), posicao + direcao);
 		}).collect(Collectors.toList());
 	}
 
-	private Tarefa retornaTarefaAtualizada(Tarefa tarefa, int posicao) {
-		log.info("[inicia] TarefaInfraRepository - retornaTarefa");
+	private Tarefa atualizaTarefa(Tarefa tarefa, int posicao) {
+		log.info("[inicia] TarefaInfraRepository - atualizaTarefa");
 		tarefa.alteraPosicao(posicao);
-		log.info("[finaliza] TarefaInfraRepository - retornaTarefa");
+		log.info("[finaliza] TarefaInfraRepository - atualizaTarefa");
 		return tarefa;
 	}
 }
