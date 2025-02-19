@@ -8,6 +8,6 @@ import java.util.UUID;
 public interface TarefaService {
     TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest);
     Tarefa detalhaTarefa(String usuario, UUID idTarefa);
-
     void concluiTarefa(String usuarioEmail, UUID idTarefa);
+    void ativaTarefa(String email,UUID idTarefa);
 }
