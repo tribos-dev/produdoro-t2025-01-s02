@@ -36,7 +36,7 @@ class UsuarioApplicationServiceTest {
 
     @Test
     void deveMudarStatusParaPausaLonga(){
-        Usuario usuario = DataHelper.createUsuario();
+        Usuario usuario = DataHelper.createUsuario2();
         
         when(usuarioRepository.buscaUsuarioPorEmail(anyString())).thenReturn(usuario);
         when(usuarioRepository.buscaUsuarioPorId(any())).thenReturn(usuario);
@@ -48,7 +48,7 @@ class UsuarioApplicationServiceTest {
 
     @Test
     void naoDeveMudarStatusParaPausaLonga(){
-        Usuario usuario = DataHelper.createUsuario();
+        Usuario usuario = DataHelper.createUsuario2();
         
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
         usuarioApplicationService.mudaStatusParaPausaLonga(usuario.getEmail(), usuario.getIdUsuario());
@@ -60,7 +60,7 @@ class UsuarioApplicationServiceTest {
 
     @Test
     void naoDeveMudarStatusParaPausaLongaQuandoCredencialInvalida(){
-        Usuario usuario = DataHelper.createUsuario();
+        Usuario usuario = DataHelper.createUsuario2();
         UUID idInvalido = UUID.fromString("416e5778-a873-45c3-928a-8e3f2f8bf3d");
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
 

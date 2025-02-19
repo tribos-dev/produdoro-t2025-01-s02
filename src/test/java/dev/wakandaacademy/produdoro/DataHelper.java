@@ -16,6 +16,10 @@ public class DataHelper {
     private static final UUID usuario1 = UUID.fromString("a713162f-20a9-4db9-a85b-90cd51ab18f4");
 
     public static Usuario createUsuario() {
+        return Usuario.builder().email("email@email.com").status(StatusUsuario.PAUSA_LONGA).idUsuario(usuario1).build();
+    }
+
+    public static Usuario createUsuario2() {
         return Usuario.builder().email("email@email.com").status(StatusUsuario.FOCO).idUsuario(usuario1).build();
     }
 
