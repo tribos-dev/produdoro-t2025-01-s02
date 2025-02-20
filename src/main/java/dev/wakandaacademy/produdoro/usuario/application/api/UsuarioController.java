@@ -2,6 +2,9 @@ package dev.wakandaacademy.produdoro.usuario.application.api;
 
 import javax.validation.Valid;
 
+import dev.wakandaacademy.produdoro.config.security.service.TokenService;
+import dev.wakandaacademy.produdoro.handler.APIException;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +43,20 @@ public class UsuarioController implements UsuarioAPI {
 		return buscaUsuario;
 	}
 
-	
+	@Override
+	public void mudaStatusParaFoco(String token, UUID idUsuario) {
+		log.info("[inicia] UsuarioController - alteraStatusParaFoco");
+		String usuario = validaTokenUsuario(token);
+		usuarioAppplicationService.mudaStatusParaFoco(usuario, idUsuario);
+		log.info("[finaliza] UsuarioController - alteraStatusParaFoco");
+	}
+
+	private String validaTokenUsuario(String token) {
+		return tokenService.getUsuarioByBearerToken(token)
+				.orElseThrow(()-> APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida"));
+	}
+
+
 
     @Override
 	public void mudaStatusParaPausaLonga(String token, UUID idUsuario){

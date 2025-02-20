@@ -19,7 +19,7 @@ public class DataHelper {
         return Usuario.builder().email("email@email.com").status(StatusUsuario.PAUSA_LONGA).idUsuario(usuario1).build();
     }
 
-    public static Usuario createUsuario2() {
+    public static Usuario createUsuario1() {
         return Usuario.builder().email("email@email.com").status(StatusUsuario.FOCO).idUsuario(usuario1).build();
     }
 
