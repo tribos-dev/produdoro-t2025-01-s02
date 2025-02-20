@@ -65,4 +65,16 @@ public class Usuario {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Id não pertence ao usuário");
 		}
 	}
+
+	public void alteraStatusParaPausaCurta(UUID idUsuario) {
+		validaUsuarioPorId(idUsuario);
+		verificaStatusPausaCurta();
+		this.status = StatusUsuario.PAUSA_CURTA;
+	}
+
+	private void verificaStatusPausaCurta() {
+		if (this.status.equals(StatusUsuario.PAUSA_CURTA)){
+			throw APIException.build(HttpStatus.CONFLICT,"já está em pausa curta");
+		}
+	}
 }
