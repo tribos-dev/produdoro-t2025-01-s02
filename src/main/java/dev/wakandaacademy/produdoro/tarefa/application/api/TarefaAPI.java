@@ -1,10 +1,12 @@
 package dev.wakandaacademy.produdoro.tarefa.application.api;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.UUID;
 
 import javax.validation.Valid;
-import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/tarefa")
@@ -15,10 +17,22 @@ public interface TarefaAPI {
 
     @GetMapping("/{idTarefa}")
     @ResponseStatus(code = HttpStatus.OK)
-    TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization",required = true) String token, 
-    		@PathVariable UUID idTarefa);
+    TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+            @PathVariable UUID idTarefa);
 
-    @PatchMapping("ativa-tarefa/{idTarefa}")
+
+    @GetMapping("/lista-tarefas/{idUsuario}")
+    @ResponseStatus(code = HttpStatus.OK)
+    List<TarefaUsuarioListReponse> listaTodasTarefasUsuario(
+            @RequestHeader(name = "Authorization", required = true) String token, @PathVariable UUID idUsuario);
+
+
+    @PatchMapping("/conclui-tarefa/{idTarefa}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    void concluiTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                       @PathVariable UUID idTarefa);
+
+    @PatchMapping("/ativa-tarefa/{idTarefa}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void ativaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
                      @PathVariable UUID idTarefa);
@@ -27,5 +41,5 @@ public interface TarefaAPI {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void deletaTarefasConcluidas(@RequestHeader(name = "Authorization", required = true) String token,
                                  @PathVariable UUID idUsuario);
-    
+
 }

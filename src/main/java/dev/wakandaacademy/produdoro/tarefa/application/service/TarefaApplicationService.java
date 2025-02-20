@@ -3,6 +3,7 @@ package dev.wakandaacademy.produdoro.tarefa.application.service;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaUsuarioListReponse;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
@@ -35,11 +36,20 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[inicia] TarefaApplicationService - detalhaTarefa");
         Usuario usuarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(usuario);
         log.info("[usuarioPorEmail] {}", usuarioPorEmail);
-        Tarefa tarefa =
-                tarefaRepository.buscaTarefaPorId(idTarefa).orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Tarefa não encontrada!"));
+        Tarefa tarefa = tarefaRepository.buscaTarefaPorId(idTarefa)
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Tarefa não encontrada!"));
         tarefa.pertenceAoUsuario(usuarioPorEmail);
         log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
         return tarefa;
+    }
+
+    @Override
+    public void concluiTarefa(String usuarioEmail, UUID idTarefa) {
+        log.info("[inicia] TarefaApplicationService --> concluiTarefa");
+        Tarefa tarefa = detalhaTarefa(usuarioEmail, idTarefa);
+        tarefa.concluiTarefa();
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService --> concluiTarefa");
     }
 
     @Override
@@ -72,4 +82,14 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - deletaTarefasConcluidas");
     }
 
+    @Override
+    public List<TarefaUsuarioListReponse> listaTodasTarefasUsuario(String email, UUID idUsuario) {
+        log.info("[inicia] TarefaApplicationService - listaTodasTarefasUsuario");
+        usuarioRepository.buscaUsuarioPorEmail(email);
+        usuarioRepository.buscaUsuarioPorId(idUsuario);
+        List<Tarefa> tarefas = tarefaRepository.buscaTarefasDoUsuario(idUsuario);
+        log.info("[finaliza] TarefaApplicationService - listaTodasTarefasUsuario");
+        return TarefaUsuarioListReponse.converte(tarefas);
+
+    }
 }
