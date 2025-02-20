@@ -2,6 +2,7 @@ package dev.wakandaacademy.produdoro.tarefa.infra;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -59,5 +60,13 @@ public class TarefaInfraRepository implements TarefaRepository {
         mongoTemplate.updateMulti(query, update, Tarefa.class);
         log.info("[finaliza] TarefaInfraRepository - desativaTarefaAtiva");
 
+    }
+
+    @Override
+    public List<Tarefa> buscaTarefasDoUsuario(UUID idUsuario) {
+        log.info("[inicia] TarefaInfraRepository - buscaTarefasPorUsuario");
+        List<Tarefa> tarefas = tarefaSpringMongoDBRepository.findAllTarefaByidUsuario(idUsuario);
+        log.info("[finaliza] TarefaInfraRepository - buscaTarefasPorUsuario");
+        return tarefas;
     }
 }
