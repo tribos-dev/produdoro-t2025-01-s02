@@ -77,8 +77,8 @@ public class Tarefa {
 		log.info("[inicia] Tarefa - incrementaPomodoroSeStatusEmFoco");
 		this.pertenceAoUsuario(usuario);
 		if (!usuario.getStatus().equals(StatusUsuario.FOCO)){
-			this.ativaTarefa();
-			//usuario.mudaStatusParaFoco(usuario.getIdUsuario());
+			//this.ativaTarefa();
+			//usuario.alteraStatusParaFoco(usuario.getIdUsuario());
 		} else {
 			this.incrementaPomodoro();
 			this.alteraStatusPorQtdeDePomodoros(tarefa, usuario);
@@ -94,7 +94,7 @@ public class Tarefa {
 		log.info("[inicia] Tarefa - alteraStatusPorQtdeDePomodoros");
 		int totalDePomodoros = tarefa.getContagemPomodoro();
 		if (totalDePomodoros % 4 == 0) {
-			//usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
+			usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
 		} else {
 			//usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
 		}

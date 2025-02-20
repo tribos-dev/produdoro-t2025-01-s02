@@ -52,11 +52,10 @@ public class Usuario {
 	}
 
 	public void verificaStatusFoco() {
-		if (this.status.equals(StatusUsuario.FOCO)){
+		if (this.status.equals(StatusUsuario.FOCO)) {
 			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuário já está em foco!");
 		}
 		mudaStatusParaFoco();
-
 	}
 
 	private void mudaStatusParaFoco() {
@@ -64,30 +63,31 @@ public class Usuario {
 	}
 
 	public void validaUsuarioPorId(UUID idUsuario) {
-		if (!this.idUsuario.equals(idUsuario)){
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "Id não pertence ao usuário");
+		if (!this.idUsuario.equals(idUsuario)) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Id não pertence ao usuário!");
 		}
 	}
 
 	private void pertenceAoUsuario(UUID idUsuario) {
 		if (!this.idUsuario.equals(idUsuario)) {
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida.");
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida!");
 		}
 	}
 
-    public void mudaStatusParaPausaLonga(UUID idUsuario){
-		pertenceAoUsuario(idUsuario);
+    public void mudaStatusParaPausaLonga(UUID idUsuario) {
+		pertenceAoUsuario(idUsuario); //Id do usuario por email
 		validaStatusPausaLonga();
 		mudaStatusPausaLonga();
 	}
 
-	private void mudaStatusPausaLonga(){
-		this.status=StatusUsuario.PAUSA_LONGA;
+	private void mudaStatusPausaLonga() {
+		this.status = StatusUsuario.PAUSA_LONGA;
 	}
 
-	public void validaStatusPausaLonga(){
-		if(this.status.equals(StatusUsuario.PAUSA_LONGA)){
-			throw APIException.build(HttpStatus.CONFLICT,"Usuário Ja esta em PAUSA LONGA!");
+	public void validaStatusPausaLonga() {
+		if (this.status.equals(StatusUsuario.PAUSA_LONGA)) {
+			throw APIException.build(HttpStatus.CONFLICT,"Usuário já esta em PAUSA LONGA!");
 		}
 	}
+
 }
