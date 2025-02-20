@@ -12,7 +12,7 @@ public interface TarefaRepository {
 
     Optional<Tarefa> buscaTarefaPorId(UUID idTarefa);
     
-	void modificaOrdemTarefa(int posicaoAtual, List<Tarefa> tarefasUsuario, int novaPosicao);
+	void modificaOrdemTarefa(Tarefa tarefa, List<Tarefa> tarefasUsuario, int novaPosicao);
 
     List<Tarefa> buscaTarefasPorUsuario(UUID idUsuario);
     

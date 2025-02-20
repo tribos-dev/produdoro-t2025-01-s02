@@ -1,5 +1,6 @@
 package dev.wakandaacademy.produdoro.tarefa.application.api;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class TarefaUsuarioListReponse {
     private StatusTarefa status;
     private StatusAtivacaoTarefa statusAtivacao;
     private int contagemPomodoro;
+    private int posicao;
 
     public TarefaUsuarioListReponse(Tarefa tarefa) {
         this.idTarefa = tarefa.getIdTarefa();
@@ -29,10 +31,12 @@ public class TarefaUsuarioListReponse {
         this.status = tarefa.getStatus();
         this.statusAtivacao = tarefa.getStatusAtivacao();
         this.contagemPomodoro = tarefa.getContagemPomodoro();
+        this.posicao = tarefa.getPosicao();
     }
 
     public static List<TarefaUsuarioListReponse> converte(List<Tarefa> tarefas) {
         return tarefas.stream()
+                .sorted(Comparator.comparingInt(Tarefa::getPosicao))
                 .map(TarefaUsuarioListReponse::new)
                 .collect(Collectors.toList());
     }
