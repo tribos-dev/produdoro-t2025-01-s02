@@ -175,7 +175,7 @@ class TarefaApplicationServiceTest {
                 () -> tarefaApplicationService.deletaTarefasConcluidas(usuarioEmail, idUsuario));
 
         assertEquals("Usuário não possui nenhuma tarefa concluída!", ex.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusException());
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusException());
     }
 
     @Test
