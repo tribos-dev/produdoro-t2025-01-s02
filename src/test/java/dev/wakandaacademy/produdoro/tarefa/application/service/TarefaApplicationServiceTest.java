@@ -182,5 +182,21 @@ class TarefaApplicationServiceTest {
         verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuarioInexistente);
     
     } 
+    
+	@Test
+	@DisplayName("Deve modificar a ordem da tarefa")
+	void modificaOrdemDeUmaTarefa(){
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+		int novaPosicao = 1;
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		when(tarefaRepository.buscaTarefasDoUsuario(any())).thenReturn(DataHelper.createListTarefa());
+		
+		tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), novaPosicao);
+		verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(any());
+		verify(tarefaRepository, times(1)).buscaTarefaPorId(any());		
+	}
 
 }
