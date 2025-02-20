@@ -75,7 +75,7 @@ public class Usuario {
 	}
 
     public void mudaStatusParaPausaLonga(UUID idUsuario) {
-		pertenceAoUsuario(idUsuario); //Id do usuario por email
+		pertenceAoUsuario(idUsuario);
 		validaStatusPausaLonga();
 		mudaStatusPausaLonga();
 	}
@@ -86,7 +86,7 @@ public class Usuario {
 
 	public void validaStatusPausaLonga() {
 		if (this.status.equals(StatusUsuario.PAUSA_LONGA)) {
-			throw APIException.build(HttpStatus.CONFLICT,"Usuário já esta em PAUSA LONGA!");
+			throw APIException.build(HttpStatus.CONFLICT,"Usuário já está em PAUSA LONGA!");
 		}
 	}
 

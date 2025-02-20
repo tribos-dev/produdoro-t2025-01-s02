@@ -77,6 +77,7 @@ public class Tarefa {
 		log.info("[inicia] Tarefa - incrementaPomodoroSeStatusEmFoco");
 		this.pertenceAoUsuario(usuario);
 		if (!usuario.getStatus().equals(StatusUsuario.FOCO)){
+			// Devo lançar excessão ou ativar e mudar o foco do usuario?
 			//this.ativaTarefa();
 			//usuario.alteraStatusParaFoco(usuario.getIdUsuario());
 		} else {
