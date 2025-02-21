@@ -75,6 +75,8 @@ public class Tarefa {
 
 	public void incrementaPomodoroSeStatusEmFoco(Tarefa tarefa, Usuario usuario) {
 		log.info("[inicia] Tarefa - incrementaPomodoroSeStatusEmFoco");
+		// Não precisava validar aqui se a tarefa pertence ao usuário,
+		// porque isso já é feito na camada service quando chamo o detalhaTarefa
 		this.pertenceAoUsuario(usuario);
 		// Devo lançar excessão ou verificar e então alterar o usuário para foco?
 		if (!Objects.equals(usuario.getStatus(), StatusUsuario.FOCO)) {
