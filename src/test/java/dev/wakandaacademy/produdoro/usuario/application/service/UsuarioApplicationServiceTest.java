@@ -2,6 +2,7 @@ package dev.wakandaacademy.produdoro.usuario.application.service;
 
 import dev.wakandaacademy.produdoro.DataHelper;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -87,4 +88,38 @@ class UsuarioApplicationServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
         verify(usuarioRepository, times(1)).buscaUsuarioPorEmail("email@email.com");
     }
+    @Test
+    void deveMudarStatusParaPausaCurta(){
+        //cenario
+        Usuario usuario = DataHelper.createUsuario();
+        when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorId(usuario.getIdUsuario())).thenReturn(usuario);
+
+        //acao
+        usuarioApplicationService.mudaStatusParaPausaCurta(usuario.getEmail(),usuario.getIdUsuario());
+
+        //verificacao
+        assertEquals(StatusUsuario.PAUSA_CURTA,usuario.getStatus());
+        verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(usuario.getEmail());
+        verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuario.getIdUsuario());
+        verify(usuarioRepository, times(1)).salva(usuario);
+    }
+    @Test
+    void deveLancaExcecaoSeUsuarioJaEstaEmPausaCurta(){
+        //cenario
+        Usuario usuario = DataHelper.createUsuario();
+        when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorId(usuario.getIdUsuario())).thenReturn(usuario);
+        usuarioApplicationService.mudaStatusParaPausaCurta(usuario.getEmail(),usuario.getIdUsuario());
+
+        //acao
+        APIException exception = assertThrows(APIException.class, usuario::verificaStatusPausaCurta);
+
+        //verificacao
+        assertEquals("já está em pausa curta", exception.getMessage());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusException());
+        verify(usuarioRepository, times(1)).buscaUsuarioPorEmail("email@email.com");
+    }
 }
+
+

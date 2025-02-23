@@ -72,7 +72,7 @@ public class Usuario {
 		this.status = StatusUsuario.PAUSA_CURTA;
 	}
 
-	private void verificaStatusPausaCurta() {
+	public void verificaStatusPausaCurta() {
 		if (this.status.equals(StatusUsuario.PAUSA_CURTA)){
 			throw APIException.build(HttpStatus.CONFLICT,"já está em pausa curta");
 		}
