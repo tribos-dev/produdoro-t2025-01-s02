@@ -36,7 +36,7 @@ public class UsuarioRepositoryMongoDB implements UsuarioRepository {
 	public Usuario buscaUsuarioPorId(UUID idUsuario) {
 		log.info("[inicia] UsuarioRepositoryMongoDB - buscaUsuarioPorId");
 		Usuario usuario = usuarioMongoRepository.findByIdUsuario(idUsuario)
-				.orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontrado!"));
+				.orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontradooo!"));
 		log.info("[finaliza] UsuarioRepositoryMongoDB - buscaUsuarioPorId");
 		return usuario;
 	}
