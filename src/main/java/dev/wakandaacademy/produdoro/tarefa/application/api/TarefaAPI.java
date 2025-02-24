@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.wakandaacademy.produdoro.config.security.swagger.DocumentaModificaOrdemTarefa;
+
 @RestController
 @RequestMapping("/v1/tarefa")
 public interface TarefaAPI {

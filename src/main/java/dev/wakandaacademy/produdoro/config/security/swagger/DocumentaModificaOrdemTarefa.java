@@ -1,4 +1,4 @@
-package dev.wakandaacademy.produdoro.tarefa.application.api;
+package dev.wakandaacademy.produdoro.config.security.swagger;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
