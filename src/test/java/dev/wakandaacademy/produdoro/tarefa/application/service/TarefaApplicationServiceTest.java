@@ -44,7 +44,7 @@ class TarefaApplicationServiceTest {
     @Test
     void deveRetornarIdTarefaNovaCriada() {
         TarefaRequest request = getTarefaRequest();
-        when(tarefaRepository.salva(any())).thenReturn(new Tarefa(request));
+        when(tarefaRepository.salva(any())).thenReturn(new Tarefa(request, 0));
 
         TarefaIdResponse response = tarefaApplicationService.criaNovaTarefa(request);
 
@@ -82,6 +82,55 @@ class TarefaApplicationServiceTest {
         TarefaRequest request = new TarefaRequest("tarefa 1", UUID.randomUUID(), null, null, 0);
         return request;
     }
+
+	@Test
+	@DisplayName("Deve lançar excecao quando Id tarefa for inválido")
+	void modificaOrdemDeUmaTarefaQuandoIdtarefaForInvalidoDeveLancarExcecao() {
+		Usuario usuario = DataHelper.createUsuario();
+		UUID idtarefa = UUID.randomUUID();
+		int novaPosicao = 1;
+
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.empty());
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), idtarefa, novaPosicao));
+
+		assertEquals(HttpStatus.NOT_FOUND, ex.getStatusException());
+        assertEquals("Tarefa não encontrada!", ex.getMessage());
+	}
+
+	@Test
+	@DisplayName("Deve lançar excecao quando email usuario for inválido")
+	void modificaOrdemDeUmaTarefaQuandoEmailForInvalidoDeveLancarExcecao() {
+		Tarefa tarefa = DataHelper.createTarefa();
+		int novaPosicao = 1;
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenThrow(APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontrado!"));
+
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa("testeinvalido@gmail.com", tarefa.getIdTarefa(), novaPosicao));
+		verify(tarefaRepository, never()).buscaTarefaPorId(any());
+
+		assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusException());
+        assertEquals("Usuario não encontrado!", ex.getMessage());
+	}
+
+	@Test
+	@DisplayName("Deve lançar excecao quando tarefa não perntence ao usuario")
+	void modificaOrdemDeUmaTarefaQuandoTarefaNaoPertenceAoUsuarioDeveLancarExcecao() {
+		Usuario usuario = DataHelper.createUsuarioInvalido();
+		Tarefa tarefa = DataHelper.createTarefa();
+		int novaPosicao = 1;
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), novaPosicao));
+		verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(any());
+		verify(tarefaRepository, times(1)).buscaTarefaPorId(any());
+
+		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+        assertEquals("Usuário não é dono da Tarefa solicitada!", ex.getMessage());
+	}
 
     @Test
     void deveRetornarTarefasCadastradasPeloUsuarioLogado() {
@@ -171,5 +220,21 @@ class TarefaApplicationServiceTest {
         assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusException());
         assertEquals("Usuário não é dono da tarefa solicitada!", e.getMessage());
     }
+
+	@Test
+	@DisplayName("Deve modificar a ordem da tarefa")
+	void modificaOrdemDeUmaTarefa() {
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+		int novaPosicao = 1;
+
+		when(UsuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(TarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		when(TarefaRepository.buscaTarefasDoUsuario(any())).thenReturn(DataHelper.createListTarefa());
+
+		TarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), novaPosicao);
+		verify(UsuarioRepository, times(1)).buscaUsuarioPorEmail(any());
+		verify(TarefaRepository, times(1)).buscaTarefaPorId(any());
+	}
 
 }
