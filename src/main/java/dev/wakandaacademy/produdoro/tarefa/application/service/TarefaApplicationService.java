@@ -1,5 +1,6 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
+import dev.wakandaacademy.produdoro.config.security.service.TokenService;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class TarefaApplicationService implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TokenService tokenService;
 
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
@@ -76,17 +79,20 @@ public class TarefaApplicationService implements TarefaService {
         return TarefaUsuarioListReponse.converte(tarefas);
 
     }
+
     @Override
     public void deletaTodasTarefas(String email, UUID idUsuario) {
         log.info("[inicia] TarefaApplicationService - deletaTodasTarefas");
-        usuarioRepository.buscaUsuarioPorEmail(email);
-        log.info("[Email] {}", email);
-        usuarioRepository.buscaUsuarioPorId(idUsuario);
-        List<Tarefa> tarefas = tarefaRepository.buscaTarefasDoUsuario(idUsuario);
-        if(tarefas.isEmpty()) {
-            throw APIException.build(HttpStatus.CONFLICT, "Nenhuma tarefa encontrada para este usuário!");
+        Usuario usuarioEmail = usuarioRepository.buscaUsuarioPorEmail(email);
+        log.info("[Email] {}", usuarioEmail);
+        Usuario usuario = usuarioRepository.buscaUsuarioPorId(idUsuario);
+        usuario.pertenceAoUsuario(usuarioEmail);
+        List<Tarefa> tarefas = tarefaRepository.buscaTarefasDoUsuario(usuario.getIdUsuario());
+        if (tarefas.isEmpty()) {
+            throw APIException.build(HttpStatus.CONFLICT, "Usuário não possui tarefa(as) cadastrada(as)");
         }
         tarefaRepository.deletaTodasTarefasUsuario(tarefas);
         log.info("[finaliza] TarefaApplicationService - deletaTodasTarefas");
     }
+    
 }

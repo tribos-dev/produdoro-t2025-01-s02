@@ -88,4 +88,10 @@ public class Usuario {
 			throw APIException.build(HttpStatus.CONFLICT,"Usuário Ja esta em PAUSA LONGA!");
 		}
 	}
+
+	public void pertenceAoUsuario(Usuario usuarioEmail) {
+		if (!this.idUsuario.equals(usuarioEmail.getIdUsuario())) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário(a) não autorizado(a) para a requisição solicitada");
+		}
+	}
 }
