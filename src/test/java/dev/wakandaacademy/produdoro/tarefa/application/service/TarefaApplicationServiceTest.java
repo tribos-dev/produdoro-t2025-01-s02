@@ -228,13 +228,13 @@ class TarefaApplicationServiceTest {
 		Tarefa tarefa = DataHelper.createTarefa();
 		int novaPosicao = 1;
 
-		when(UsuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
-		when(TarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
-		when(TarefaRepository.buscaTarefasDoUsuario(any())).thenReturn(DataHelper.createListTarefa());
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		when(tarefaRepository.buscaTarefasDoUsuario(any())).thenReturn(DataHelper.createListTarefa());
 
-		TarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), novaPosicao);
-		verify(UsuarioRepository, times(1)).buscaUsuarioPorEmail(any());
-		verify(TarefaRepository, times(1)).buscaTarefaPorId(any());
+        tarefaApplicationService.usuarioModificaOrdemDeUmaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), novaPosicao);
+		verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(any());
+		verify(tarefaRepository, times(1)).buscaTarefaPorId(any());
 	}
 
 }
