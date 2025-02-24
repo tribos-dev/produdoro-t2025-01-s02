@@ -38,7 +38,7 @@ public class Usuario {
 	private StatusUsuario status = StatusUsuario.FOCO;
 	@Builder.Default
 	private Integer quantidadePomodorosPausaCurta = 0;
-	
+
 	public Usuario(UsuarioNovoRequest usuarioNovo, ConfiguracaoPadrao configuracaoPadrao) {
 		this.idUsuario = UUID.randomUUID();
 		this.email = usuarioNovo.getEmail();
@@ -88,6 +88,18 @@ public class Usuario {
 	public void validaStatusPausaLonga(){
 		if(this.status.equals(StatusUsuario.PAUSA_LONGA)){
 			throw APIException.build(HttpStatus.CONFLICT,"Usuário Ja esta em PAUSA LONGA!");
+		}
+	}
+
+	public void alteraStatusParaPausaCurta(UUID idUsuario) {
+		validaUsuarioPorId(idUsuario);
+		verificaStatusPausaCurta();
+		this.status = StatusUsuario.PAUSA_CURTA;
+	}
+
+	public void verificaStatusPausaCurta() {
+		if (this.status.equals(StatusUsuario.PAUSA_CURTA)){
+			throw APIException.build(HttpStatus.CONFLICT,"já está em pausa curta");
 		}
 	}
 }
