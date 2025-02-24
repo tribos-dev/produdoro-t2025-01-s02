@@ -99,7 +99,7 @@ public class Tarefa {
 		if (totalDePomodoros % 4 == 0) {
 			usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
 		} else {
-			//usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
+			usuario.alteraStatusParaPausaCurta(usuario.getIdUsuario());
 		}
 		log.info("[finaliza] Tarefa - alteraStatusPorQtdeDePomodoros");
 	}
