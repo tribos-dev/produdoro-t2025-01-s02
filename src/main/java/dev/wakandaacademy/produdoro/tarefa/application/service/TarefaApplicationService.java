@@ -1,5 +1,13 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
@@ -10,11 +18,6 @@ import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioReposi
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @Log4j2
@@ -26,7 +29,8 @@ public class TarefaApplicationService implements TarefaService {
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
         log.info("[inicia] TarefaApplicationService - criaNovaTarefa");
-        Tarefa tarefaCriada = tarefaRepository.salva(new Tarefa(tarefaRequest));
+        int posicao = tarefaRepository.buscaTarefasDoUsuario(tarefaRequest.getIdUsuario()).size();
+        Tarefa tarefaCriada = tarefaRepository.salva(new Tarefa(tarefaRequest, posicao));
         log.info("[finaliza] TarefaApplicationService - criaNovaTarefa");
         return TarefaIdResponse.builder().idTarefa(tarefaCriada.getIdTarefa()).build();
     }
@@ -42,6 +46,18 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
         return tarefa;
     }
+    
+	@Override
+	public void usuarioModificaOrdemDeUmaTarefa(String emailUsario, UUID idTarefa, int novaPosicao) {
+        log.info("[inicia] TarefaApplicationService - usuarioModificaOrdemDeUmaTarefa");
+        Tarefa tarefa = detalhaTarefa(emailUsario, idTarefa);
+        List<Tarefa> tarefas = tarefaRepository.buscaTarefasDoUsuario(tarefa.getIdUsuario())
+        		.stream().sorted(Comparator.comparingInt(Tarefa::getPosicao)).collect(Collectors.toList());
+        tarefaRepository.modificaOrdemTarefa(tarefa, tarefas, novaPosicao);
+        tarefa.alteraPosicao(novaPosicao);
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService - usuarioModificaOrdemDeUmaTarefa");
+	}
 
     @Override
     public void concluiTarefa(String usuarioEmail, UUID idTarefa) {
