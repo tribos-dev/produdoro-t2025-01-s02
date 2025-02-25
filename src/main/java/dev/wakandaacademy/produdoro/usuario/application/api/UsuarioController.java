@@ -9,10 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.wakandaacademy.produdoro.usuario.application.service.UsuarioService;
-import dev.wakandaacademy.produdoro.config.security.service.TokenService;
-import dev.wakandaacademy.produdoro.handler.APIException;
-
-import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
