@@ -104,4 +104,8 @@ public class Tarefa {
 		log.info("[finaliza] Tarefa - alteraStatusPorQtdeDePomodoros");
 	}
 
+	public void ajustaPosicao(int novaPosicao) {
+		this.posicao = novaPosicao;
+	}
+
 }
