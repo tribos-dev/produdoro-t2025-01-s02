@@ -77,7 +77,7 @@ public class Usuario {
 
 	public void validaStatusPausaLonga() {
 		if (this.status.equals(StatusUsuario.PAUSA_LONGA)) {
-			throw APIException.build(HttpStatus.CONFLICT,"Usuário já está em PAUSA LONGA!");
+			throw APIException.build(HttpStatus.CONFLICT,"Usuário já está em pausa longa!");
 		}
 	}
 
@@ -89,7 +89,7 @@ public class Usuario {
 
 	public void verificaStatusPausaCurta() {
 		if (this.status.equals(StatusUsuario.PAUSA_CURTA)){
-			throw APIException.build(HttpStatus.CONFLICT,"já está em pausa curta");
+			throw APIException.build(HttpStatus.CONFLICT,"Usuário já está em pausa curta!");
 		}
 	}
 

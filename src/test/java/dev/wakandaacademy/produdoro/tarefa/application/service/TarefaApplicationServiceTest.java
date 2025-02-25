@@ -130,7 +130,7 @@ class TarefaApplicationServiceTest {
 		verify(tarefaRepository, times(1)).buscaTarefaPorId(any());
 
 		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
-        assertEquals("Usuário não é dono da Tarefa solicitada!", ex.getMessage());
+        assertEquals("Usuário não é dono da tarefa solicitada!", ex.getMessage());
 	}
 
     @Test
