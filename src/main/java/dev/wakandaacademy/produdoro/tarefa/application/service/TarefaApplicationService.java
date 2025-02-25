@@ -1,6 +1,5 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
-import dev.wakandaacademy.produdoro.config.security.service.TokenService;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,7 +22,6 @@ import java.util.UUID;
 public class TarefaApplicationService implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final TokenService tokenService;
 
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
@@ -85,9 +82,9 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[inicia] TarefaApplicationService - deletaTodasTarefas");
         Usuario usuarioEmail = usuarioRepository.buscaUsuarioPorEmail(email);
         log.info("[Email] {}", usuarioEmail);
-        Usuario usuario = usuarioRepository.buscaUsuarioPorId(idUsuario);
-        usuario.pertenceAoUsuario(usuarioEmail);
-        List<Tarefa> tarefas = tarefaRepository.buscaTarefasDoUsuario(usuario.getIdUsuario());
+        Usuario usuarioId = usuarioRepository.buscaUsuarioPorId(idUsuario);
+        usuarioId.pertenceAoUsuario(usuarioEmail);
+        List<Tarefa> tarefas = tarefaRepository.buscaTarefasDoUsuario(usuarioId.getIdUsuario());
         if (tarefas.isEmpty()) {
             throw APIException.build(HttpStatus.CONFLICT, "Usuário não possui tarefa(as) cadastrada(as)");
         }
