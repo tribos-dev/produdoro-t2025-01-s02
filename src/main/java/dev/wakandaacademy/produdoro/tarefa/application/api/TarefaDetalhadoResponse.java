@@ -5,9 +5,7 @@ import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import lombok.Value;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Value
 public class TarefaDetalhadoResponse {
@@ -20,6 +18,7 @@ public class TarefaDetalhadoResponse {
     private StatusTarefa status;
     private StatusAtivacaoTarefa statusAtivacao;
     private int contagemPomodoro;
+    private int posicao;
 
     public TarefaDetalhadoResponse(Tarefa tarefa) {
         this.idTarefa = tarefa.getIdTarefa();
@@ -30,5 +29,7 @@ public class TarefaDetalhadoResponse {
         this.status = tarefa.getStatus();
         this.statusAtivacao = tarefa.getStatusAtivacao();
         this.contagemPomodoro = tarefa.getContagemPomodoro();
+        this.posicao = tarefa.getPosicao();
     }
+
 }
