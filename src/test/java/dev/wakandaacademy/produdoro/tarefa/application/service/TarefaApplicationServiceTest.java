@@ -130,7 +130,7 @@ class TarefaApplicationServiceTest {
 		verify(tarefaRepository, times(1)).buscaTarefaPorId(any());
 
 		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
-        assertEquals("Usuário não é dono da Tarefa solicitada!", ex.getMessage());
+        assertEquals("Usuário não é dono da tarefa solicitada!", ex.getMessage());
 	}
 
     @Test
@@ -260,9 +260,53 @@ class TarefaApplicationServiceTest {
         verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuarioInexistente);
     }
 
+    @Test
+    @DisplayName("Deve incrementar pomodoro")
+    void deveIncrementarPomodoro() {
+        Usuario usuarioEmFoco = DataHelper.createUsuario1();
+        Tarefa tarefa = DataHelper.createTarefa();
+        int contagemPomodoroAntes = tarefa.getContagemPomodoro();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuarioEmFoco);
+        when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+        tarefaApplicationService.incrementaPomodoro(usuarioEmFoco.getEmail(), tarefa.getIdTarefa());
+
+        int contagemPomodoroDepois = tarefa.getContagemPomodoro();
+        verify(tarefaRepository, times(1)).salva(any());
+        assertEquals(contagemPomodoroAntes+1,contagemPomodoroDepois);
+    }
+
+    @Test
+    @DisplayName("Não deve incrementar pomodoro quando a tarefa não existe")
+    void naoDeveIncrementarPomodoroQuandoTarefaNaoExiste() {
+        Usuario usuarioEmFoco = DataHelper.createUsuario1();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuarioEmFoco);
+        APIException e = assertThrows(APIException.class,
+                () -> tarefaApplicationService.incrementaPomodoro(usuarioEmFoco.getEmail(), UUID.randomUUID()));
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatusException());
+        assertEquals("Tarefa não encontrada!", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Não deve incrementar pomodoro quando o usuário não é dono da tarefa")
+    void naoDeveIncrementaPomodoroQuandoUsuarioNaoDonoDaTarefa() {
+        Usuario usuarioNaoDonoDaTarefa = DataHelper.createUsuario2();
+        Tarefa tarefa = DataHelper.createTarefa();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuarioNaoDonoDaTarefa);
+        when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+        APIException e = assertThrows(APIException.class,
+                () -> tarefaApplicationService.incrementaPomodoro(usuarioNaoDonoDaTarefa.getEmail(), tarefa.getIdTarefa()));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusException());
+        assertEquals("Usuário não é dono da tarefa solicitada!", e.getMessage());
+    }
+
 	@Test
 	@DisplayName("Deve modificar a ordem da tarefa")
-	void modificaOrdemDeUmaTarefa(){
+	void modificaOrdemDeUmaTarefa() {
 		Usuario usuario = DataHelper.createUsuario();
 		Tarefa tarefa = DataHelper.createTarefa();
 		int novaPosicao = 1;
