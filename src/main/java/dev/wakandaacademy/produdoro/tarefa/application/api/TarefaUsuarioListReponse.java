@@ -5,11 +5,13 @@ import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import lombok.Value;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Value
-public class TarefaDetalhadoResponse {
-
+public class TarefaUsuarioListReponse {
     private UUID idTarefa;
     private String descricao;
     private UUID idUsuario;
@@ -20,7 +22,7 @@ public class TarefaDetalhadoResponse {
     private int contagemPomodoro;
     private int posicao;
 
-    public TarefaDetalhadoResponse(Tarefa tarefa) {
+    public TarefaUsuarioListReponse(Tarefa tarefa) {
         this.idTarefa = tarefa.getIdTarefa();
         this.descricao = tarefa.getDescricao();
         this.idUsuario = tarefa.getIdUsuario();
@@ -30,6 +32,13 @@ public class TarefaDetalhadoResponse {
         this.statusAtivacao = tarefa.getStatusAtivacao();
         this.contagemPomodoro = tarefa.getContagemPomodoro();
         this.posicao = tarefa.getPosicao();
+    }
+
+    public static List<TarefaUsuarioListReponse> converte(List<Tarefa> tarefas) {
+        return tarefas.stream()
+                .sorted(Comparator.comparingInt(Tarefa::getPosicao))
+                .map(TarefaUsuarioListReponse::new)
+                .collect(Collectors.toList());
     }
 
 }

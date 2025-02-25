@@ -1,16 +1,16 @@
 package dev.wakandaacademy.produdoro.tarefa.application.api;
 
-import java.util.UUID;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import dev.wakandaacademy.produdoro.config.security.service.TokenService;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.service.TarefaService;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @Log4j2
@@ -43,12 +43,69 @@ public class TarefaRestController implements TarefaAPI {
 		log.info("[finaliza] TarefaRestController -->  editaTarefa");
 	}
 
+	public void concluiTarefa(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController --> concluiTarefa");
+		String usuarioEmail = getUsuarioByToken(token);
+		tarefaService.concluiTarefa(usuarioEmail, idTarefa);
+		log.info("[finaliza] TarefaRestController --> concluiTarefa");
+
+	}
+
+	@Override
+	public void ativaTarefa(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - ativaTarefa");
+		String email = getUsuarioByToken(token);
+		tarefaService.ativaTarefa(email,idTarefa);
+		log.info("[finaliza] TarefaRestController - ativaTarefa");
+
+	}
 
 	private String getUsuarioByToken(String token) {
 		log.debug("[token] {}", token);
 		String usuario = tokenService.getUsuarioByBearerToken(token).orElseThrow(() -> APIException.build(HttpStatus.UNAUTHORIZED, token));
 		log.info("[usuario] {}", usuario);
 		return usuario;
+	}
+
+	@Override
+	public void incrementaPomodoro(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - incrementaPomodoro");
+		String usuarioEmail = getUsuarioByToken(token);
+		tarefaService.incrementaPomodoro(usuarioEmail, idTarefa);
+		log.info("[finaliza] TarefaRestController - incrementaPomodoro");
+	}
+
+	@Override
+	public void deletaTarefasConcluidas(String token, UUID idUsuario) {
+		log.info("[inicia] TarefaRestController - deletaTarefasConcluidas");
+		String usuarioEmail = getUsuarioByToken(token);
+		tarefaService.deletaTarefasConcluidas(usuarioEmail, idUsuario);
+		log.info("[finaliza] TarefaRestController - deletaTarefasConcluidas");
+	}
+
+	@Override
+	public void usuarioModificaOrdemDeUmaTarefa(String token, UUID idTarefa, int novaPosicao) {
+		log.info("[inicia] TarefaRestController - usuarioModificaOrdemDeUmaTarefa");
+		String emailUsario = getUsuarioByToken(token);
+		tarefaService.usuarioModificaOrdemDeUmaTarefa(emailUsario, idTarefa, novaPosicao);
+		log.info("[finaliza] TarefaRestController - usuarioModificaOrdemDeUmaTarefa");
+	}
+
+    @Override
+	public List<TarefaUsuarioListReponse> listaTodasTarefasUsuario(String token, UUID idUsuario) {
+		log.info("[inicia] TarefaRestController - listaTodasTarefasUsuario");
+		String email = getUsuarioByToken(token);
+		List<TarefaUsuarioListReponse> tarefasUsuario = tarefaService.listaTodasTarefasUsuario(email, idUsuario);
+		log.info("[finaliza] TarefaRestController - listaTodasTarefasUsuario");
+		return tarefasUsuario;
+	}
+
+	@Override
+	public void deletaTodasTarefas(String token, UUID idUsuario) {
+		log.info("[inicia] TarefaRestController - deletaTodasTarefas");
+		String usuario = getUsuarioByToken(token);
+		tarefaService.deletaTodasTarefas(usuario, idUsuario);
+		log.info("[finaliza] TarefaRestController - deletaTodasTarefas");
 	}
 
 }

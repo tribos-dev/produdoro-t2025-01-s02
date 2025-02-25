@@ -1,7 +1,9 @@
 package dev.wakandaacademy.produdoro.usuario.infra;
 
+
 import dev.wakandaacademy.produdoro.handler.APIException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +22,12 @@ public class UsuarioRepositoryMongoDB implements UsuarioRepository {
 	@Override
 	public Usuario salva(Usuario usuario) {
 		log.info("[inicia] UsuarioRepositoryMongoDB - salva");
-		Usuario novoUsuario = usuarioMongoRepository.save(usuario);
+		Usuario novoUsuario = null;
+		try {
+			novoUsuario = usuarioMongoRepository.save(usuario);
+		} catch (DuplicateKeyException ex) {
+			throw APIException.build(HttpStatus.BAD_REQUEST, String.format("Usuário com esse email: %s já está cadastrado no sistema", usuario.getEmail()));
+		}
 		log.info("[inicia] UsuarioRepositoryMongoDB - salva");
 		return novoUsuario;
 	}
@@ -29,7 +36,7 @@ public class UsuarioRepositoryMongoDB implements UsuarioRepository {
 	public Usuario buscaUsuarioPorId(UUID idUsuario) {
 		log.info("[inicia] UsuarioRepositoryMongoDB - buscaUsuarioPorId");
 		Usuario usuario = usuarioMongoRepository.findByIdUsuario(idUsuario)
-				.orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontrado!"));
+				.orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "Usuário não encontrado!"));
 		log.info("[finaliza] UsuarioRepositoryMongoDB - buscaUsuarioPorId");
 		return usuario;
 	}
@@ -38,7 +45,7 @@ public class UsuarioRepositoryMongoDB implements UsuarioRepository {
 	public Usuario buscaUsuarioPorEmail(String emailUsuario) {
 		log.info("[inicia] UsuarioRepositoryMongoDB - buscaUsuarioPorEmail");
 		Usuario usuario = usuarioMongoRepository.findByEmail(emailUsuario)
-				.orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "Usuario não encontrado!"));
+				.orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "Usuário não encontrado!"));
 		log.info("[finaliza] UsuarioRepositoryMongoDB - buscaUsuarioPorEmail");
 		return usuario;
 	}

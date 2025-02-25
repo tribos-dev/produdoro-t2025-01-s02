@@ -1,19 +1,19 @@
 package dev.wakandaacademy.produdoro.usuario.application.service;
 
+import java.util.UUID;
+
 import javax.validation.Valid;
 
-import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import dev.wakandaacademy.produdoro.credencial.application.service.CredencialService;
 import dev.wakandaacademy.produdoro.pomodoro.application.service.PomodoroService;
 import dev.wakandaacademy.produdoro.usuario.application.api.UsuarioCriadoResponse;
 import dev.wakandaacademy.produdoro.usuario.application.api.UsuarioNovoRequest;
+import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
-import java.util.UUID;
 
 @Service
 @Log4j2
@@ -43,5 +43,35 @@ public class UsuarioApplicationService implements UsuarioService {
 		return new UsuarioCriadoResponse(usuario);
 	}
 
+	@Override
+	public void mudaStatusParaFoco(String usuario, UUID idUsuario) {
+		log.info("[inicia] UsuarioApplicationService - mudaStatusParaFoco");
+		Usuario usuarioFoco = usuarioRepository.buscaUsuarioPorEmail(usuario);
+		usuarioRepository.buscaUsuarioPorId(idUsuario);
+		usuarioFoco.alteraStatusParaFoco(idUsuario);
+		usuarioRepository.salva(usuarioFoco);
+		log.info("[finaliza] UsuarioApplicationService - mudaStatusParaFoco");
+
+	}
+
+	@Override
+	public void mudaStatusParaPausaLonga(String email, UUID idUsuario){
+		log.info("[inicia] usuarioApplicationService - mudaStatusParaPausaLonga");
+		Usuario usuario = usuarioRepository.buscaUsuarioPorEmail(email);
+		usuarioRepository.buscaUsuarioPorId(idUsuario);
+		usuario.mudaStatusParaPausaLonga(idUsuario);
+		usuarioRepository.salva(usuario);
+		log.info("[finaliza] usuarioApplicationService - mudaStatusParaPausaLonga");
+	}
+
+    @Override
+    public void mudaStatusParaPausaCurta(String usuario, UUID idUsuario) {
+		log.info("[inicia] UsuarioApplicationService - mudaStatusParaPausaCurta");
+		Usuario usuarioPausaCurta = usuarioRepository.buscaUsuarioPorEmail(usuario);
+		usuarioRepository.buscaUsuarioPorId(idUsuario);
+		usuarioPausaCurta.alteraStatusParaPausaCurta(idUsuario);
+		usuarioRepository.salva(usuarioPausaCurta);
+		log.info("[finaliza] UsuarioApplicationService - mudaStatusParaPausaCurta");
+		}
 
 }

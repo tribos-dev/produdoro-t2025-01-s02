@@ -32,10 +32,15 @@ public class FiltroToken extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         log.info("[inicio] Filtro - filtrando requisicao");
-        String token = recuperaToken(request);
-        autenticaCliente(token);
-        log.info("[finaliza] Filtro - filtrando requisicao");
-        filterChain.doFilter(request, response);
+        try {
+            String token = recuperaToken(request);
+            autenticaCliente(token);
+            log.info("[finaliza] Filtro - filtrando requisicao");
+            filterChain.doFilter(request, response);
+        } catch (APIException e) {
+            log.error("Erro ao autenticar o usuário: {}", e.getMessage());
+            response.sendError(e.getStatusException().value(), e.getMessage());
+        }
     }
 
     private void autenticaCliente(String token) {
@@ -47,7 +52,7 @@ public class FiltroToken extends OncePerRequestFilter {
     }
 
     private Credencial recuperaUsuario(String token) {
-        var usuario = tokenService.getUsuario(token).orElseThrow(()-> APIException.build(HttpStatus.FORBIDDEN,"O Token enviado está inválido. Tente novamente."));
+        var usuario = tokenService.getUsuario(token).orElseThrow(()-> APIException.build(HttpStatus.FORBIDDEN,"Usuario(a) nao autorizado(a) para a requisicao solicitada"));
         return credencialService.buscaCredencialPorUsuario(usuario);
     }
 
