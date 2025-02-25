@@ -3,14 +3,20 @@ package dev.wakandaacademy.produdoro.usuario.domain;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.pomodoro.domain.ConfiguracaoPadrao;
 import dev.wakandaacademy.produdoro.usuario.application.api.UsuarioNovoRequest;
-import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 
-import javax.validation.constraints.Email;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.util.UUID;
+
+import javax.validation.constraints.Email;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -90,6 +96,12 @@ public class Usuario {
 	public void verificaStatusPausaCurta() {
 		if (this.status.equals(StatusUsuario.PAUSA_CURTA)){
 			throw APIException.build(HttpStatus.CONFLICT,"Usuário já está em pausa curta!");
+		}
+	}
+
+	public void pertenceAoUsuario(Usuario usuarioEmail) {
+		if (!this.idUsuario.equals(usuarioEmail.getIdUsuario())) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário(a) não autorizado(a) para a requisição solicitada");
 		}
 	}
 

@@ -148,4 +148,12 @@ public class TarefaInfraRepository implements TarefaRepository {
         return tarefa;
     }
 
+
+	@Override
+    public void deletaTodasTarefasUsuario(List<Tarefa> tarefas) {
+        log.info("[inicia] TarefaInfraRepository - deletaTarefasDoUsuario");
+        tarefaSpringMongoDBRepository.deleteAll(tarefas);
+        log.info("[finaliza] TarefaInfraRepository - deletaTarefasDoUsuario");
+
+    }
 }

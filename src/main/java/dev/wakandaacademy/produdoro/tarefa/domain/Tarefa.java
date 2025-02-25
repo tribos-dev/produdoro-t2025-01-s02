@@ -71,6 +71,7 @@ public class Tarefa {
 		if (statusAtivacao == StatusAtivacaoTarefa.ATIVA) {
 			throw APIException.build(HttpStatus.CONFLICT, "Tarefa já está ativa!");
 		}
+
 	}
 
 	public void incrementaPomodoroSeStatusEmFoco(Tarefa tarefa, Usuario usuario) {

@@ -160,5 +160,5 @@ class UsuarioApplicationServiceTest {
 
         APIException e = assertThrows(APIException.class,() -> usuarioApplicationService.mudaStatusParaPausaLonga(usuario.getEmail(), idInvalido));
         assertEquals(HttpStatus.UNAUTHORIZED,e.getStatusException());
-    }
+    } 
 }
