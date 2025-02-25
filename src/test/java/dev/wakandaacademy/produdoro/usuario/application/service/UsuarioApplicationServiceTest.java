@@ -93,6 +93,7 @@ class UsuarioApplicationServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
         verify(usuarioRepository, times(1)).buscaUsuarioPorEmail("email@email.com");
     }
+
     @Test
     void deveMudarStatusParaPausaCurta(){
         //cenario
@@ -109,6 +110,7 @@ class UsuarioApplicationServiceTest {
         verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuario.getIdUsuario());
         verify(usuarioRepository, times(1)).salva(usuario);
     }
+
     @Test
     void deveLancaExcecaoSeUsuarioJaEstaEmPausaCurta(){
         //cenario
@@ -121,10 +123,11 @@ class UsuarioApplicationServiceTest {
         APIException exception = assertThrows(APIException.class, usuario::verificaStatusPausaCurta);
 
         //verificacao
-        assertEquals("já está em pausa curta", exception.getMessage());
+        assertEquals("Usuário já está em pausa curta!", exception.getMessage());
         assertEquals(HttpStatus.CONFLICT, exception.getStatusException());
         verify(usuarioRepository, times(1)).buscaUsuarioPorEmail("email@email.com");
     }
+
     @Test
     void deveMudarStatusParaPausaLonga(){
         Usuario usuario = DataHelper.createUsuario1();
@@ -145,7 +148,7 @@ class UsuarioApplicationServiceTest {
         usuarioApplicationService.mudaStatusParaPausaLonga(usuario.getEmail(), usuario.getIdUsuario());
 
         APIException e = assertThrows(APIException.class, usuario::validaStatusPausaLonga);
-        assertEquals("Usuário Ja esta em PAUSA LONGA!",e.getMessage());
+        assertEquals("Usuário já está em pausa longa!",e.getMessage());
         assertEquals(HttpStatus.CONFLICT,e.getStatusException());
     }
 

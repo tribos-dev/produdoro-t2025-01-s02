@@ -1,11 +1,11 @@
 package dev.wakandaacademy.produdoro.tarefa.application.api;
 
+import dev.wakandaacademy.produdoro.config.security.swagger.DocumentaModificaOrdemTarefa;
+import org.springframework.http.HttpStatus;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import dev.wakandaacademy.produdoro.config.security.swagger.DocumentaModificaOrdemTarefa;
 
 @RestController
 @RequestMapping("/v1/tarefa")
@@ -41,8 +39,7 @@ public interface TarefaAPI {
   @GetMapping("/lista-tarefas/{idUsuario}")
   @ResponseStatus(code = HttpStatus.OK)
   List<TarefaUsuarioListReponse> listaTodasTarefasUsuario(
-      @RequestHeader(name = "Authorization", required = true) String token,
-      @PathVariable UUID idUsuario);
+      @RequestHeader(name = "Authorization", required = true) String token, @PathVariable UUID idUsuario);
 
   @PatchMapping("/conclui-tarefa/{idTarefa}")
   @ResponseStatus(code = HttpStatus.NO_CONTENT)
@@ -52,6 +49,16 @@ public interface TarefaAPI {
   @PatchMapping("/ativa-tarefa/{idTarefa}")
   @ResponseStatus(code = HttpStatus.NO_CONTENT)
   void ativaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+      @PathVariable UUID idTarefa);
+
+  @DeleteMapping("/deleta-tarefas-concluidas/{idUsuario}")
+  @ResponseStatus(code = HttpStatus.NO_CONTENT)
+  void deletaTarefasConcluidas(@RequestHeader(name = "Authorization", required = true) String token,
+      @PathVariable UUID idUsuario);
+
+  @PostMapping("/incrementa-pomodoro/{idTarefa}")
+  @ResponseStatus(code = HttpStatus.NO_CONTENT)
+  void incrementaPomodoro(@RequestHeader(name = "Authorization", required = true) String token,
       @PathVariable UUID idTarefa);
 
   @DeleteMapping("/deleta-todas-tarefas/{idUsuario}")
