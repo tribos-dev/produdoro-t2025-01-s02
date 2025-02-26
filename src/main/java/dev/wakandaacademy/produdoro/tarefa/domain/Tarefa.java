@@ -1,6 +1,7 @@
 package dev.wakandaacademy.produdoro.tarefa.domain;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
@@ -94,6 +95,10 @@ public class Tarefa {
 		return ++contagemPomodoro;
 	}
 
+	public void edita(EditaTarefaRequest tarefaRequest) { 
+		this.descricao = tarefaRequest.getDescricao();
+	}
+
 	private void alteraStatusPorQtdeDePomodoros(Tarefa tarefa, Usuario usuario) {
 		log.info("[inicia] Tarefa - alteraStatusPorQtdeDePomodoros");
 		int totalDePomodoros = tarefa.getContagemPomodoro();
@@ -108,5 +113,4 @@ public class Tarefa {
 	public void ajustaPosicao(int novaPosicao) {
 		this.posicao = novaPosicao;
 	}
-
 }

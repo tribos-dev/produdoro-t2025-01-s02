@@ -1,6 +1,7 @@
 package dev.wakandaacademy.produdoro;
 
 import dev.wakandaacademy.produdoro.pomodoro.domain.ConfiguracaoPadrao;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
@@ -81,4 +82,8 @@ public class DataHelper {
         return Usuario.builder().email("email_usuario_teste@email.com").status(StatusUsuario.PAUSA_LONGA).idUsuario(UUID.randomUUID()).build();
     }
 
+    public static EditaTarefaRequest createEditaTarefa() {
+        EditaTarefaRequest editaTarefaRequest = new EditaTarefaRequest("TAREFA 1");
+        return editaTarefaRequest;
+    }
 }

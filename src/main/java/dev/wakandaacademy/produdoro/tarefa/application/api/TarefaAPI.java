@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -61,8 +60,15 @@ public interface TarefaAPI {
   void incrementaPomodoro(@RequestHeader(name = "Authorization", required = true) String token,
       @PathVariable UUID idTarefa);
 
+
+    @PatchMapping("/edita-tarefa/{idTarefa}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    void editaTarefa(@RequestHeader(name = "Authorization", required = true) String token, @PathVariable UUID idTarefa,
+                     @RequestBody EditaTarefaRequest tarefaRequest);
+
   @DeleteMapping("/deleta-todas-tarefas/{idUsuario}")
   @ResponseStatus(code = HttpStatus.NO_CONTENT)
   void deletaTodasTarefas(@RequestHeader(name = "Authorization", required = true) String token,
       @PathVariable UUID idUsuario);
+
 }

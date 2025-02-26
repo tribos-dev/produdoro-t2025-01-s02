@@ -1,27 +1,18 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import dev.wakandaacademy.produdoro.DataHelper;
 import dev.wakandaacademy.produdoro.config.security.service.TokenService;
+import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaUsuarioListReponse;
+import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
+import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
-import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,12 +21,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import dev.wakandaacademy.produdoro.handler.APIException;
-import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
-import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
-import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaUsuarioListReponse;
-import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
-import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
+import java.util.*;
+
+import static dev.wakandaacademy.produdoro.DataHelper.getTarefaRequest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class TarefaApplicationServiceTest {
@@ -47,8 +39,10 @@ class TarefaApplicationServiceTest {
     // @MockBean
     @Mock
     TarefaRepository tarefaRepository;
+
     @Mock
     UsuarioRepository usuarioRepository;
+
     @Mock
     TokenService tokenService;
 
@@ -62,6 +56,19 @@ class TarefaApplicationServiceTest {
         assertNotNull(response);
         assertEquals(TarefaIdResponse.class, response.getClass());
         assertEquals(UUID.class, response.getIdTarefa().getClass());
+    }
+
+    @Test
+    void deveEditarDescricaoTarefa() {
+        Tarefa tarefa = DataHelper.createTarefa();
+        Usuario usuario = DataHelper.createUsuario();
+        EditaTarefaRequest editaTarefaRequest = DataHelper.createEditaTarefa();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+        tarefaApplicationService.editaTarefa(usuario.getEmail(), tarefa.getIdTarefa(), editaTarefaRequest);
+        verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(usuario.getEmail());
+        verify(tarefaRepository, times(1)).buscaTarefaPorId(tarefa.getIdTarefa());
+        assertEquals("TAREFA 1", tarefa.getDescricao());
     }
 
     @Test
@@ -405,5 +412,4 @@ class TarefaApplicationServiceTest {
         assertEquals(HttpStatus.CONFLICT, exception.getStatusException());
         assertEquals("Usuário não possui tarefa(as) cadastrada(as)", exception.getMessage());
     }
-
 }
