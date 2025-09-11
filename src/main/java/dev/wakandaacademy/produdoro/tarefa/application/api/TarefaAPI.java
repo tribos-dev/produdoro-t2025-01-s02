@@ -71,4 +71,8 @@ public interface TarefaAPI {
   void deletaTodasTarefas(@RequestHeader(name = "Authorization", required = true) String token,
       @PathVariable UUID idUsuario);
 
+  @PatchMapping
+  @ResponseStatus(code = HttpStatus.NO_CONTENT)
+  lkjdakljflkajsflkjaslkdj
+
 }
